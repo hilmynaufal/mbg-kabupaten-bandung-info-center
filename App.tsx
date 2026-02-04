@@ -323,9 +323,9 @@ const App: React.FC = () => {
             <span>Kabupaten Bandung Sehat & Bedas</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.05] mb-8 tracking-tight">
-            Makan Bergizi Gratis <br />
+            MBG <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">
-              Generasi Emas 2045
+              Kabupaten Bandung
             </span>
           </h1>
           <p className="text-slate-500 max-w-2xl text-xl mb-12 font-medium leading-relaxed">
