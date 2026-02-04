@@ -825,7 +825,7 @@ const App: React.FC = () => {
               <Utensils className="w-7 h-7 text-white" />
             </div>
             <div className="hidden sm:block">
-              <h1 className="font-black text-xl tracking-tighter text-slate-900 leading-none">MBG BANDUNG</h1>
+              <h1 className="font-black text-xl tracking-tighter text-slate-900 leading-none">MBG Kabupaten Bandung</h1>
               <p className="text-[9px] font-black text-emerald-600 uppercase tracking-[0.3em] mt-1.5">Portal Bedas</p>
             </div>
           </div>
@@ -855,49 +855,6 @@ const App: React.FC = () => {
         {view === 'sppg' && <SppgView />}
         {view === 'sppg-detail' && <SppgDetailView />}
       </main>
-
-      <footer className="bg-slate-900 text-white py-24 px-6 mt-auto">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-16 mb-20">
-          <div className="col-span-2 space-y-8">
-            <div className="flex items-center space-x-4">
-              <div className="bg-emerald-600 p-2.5 rounded-2xl">
-                <Utensils className="w-8 h-8 text-white" />
-              </div>
-              <span className="font-black text-3xl tracking-tighter uppercase">MBG KAB. BANDUNG</span>
-            </div>
-            <p className="text-slate-400 max-w-sm leading-relaxed text-sm font-medium">
-              Komitmen nyata Pemerintah Kabupaten Bandung di bawah visi BEDAS untuk menciptakan generasi emas Indonesia 2045 melalui kecukupan gizi yang merata.
-            </p>
-            <div className="flex space-x-5">
-              <a href="#" className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-emerald-600 transition-all border border-white/10"><Instagram className="w-5 h-5" /></a>
-              <a href="#" className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-emerald-600 transition-all border border-white/10"><PhoneCall className="w-5 h-5" /></a>
-              <a href="#" className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-emerald-600 transition-all border border-white/10"><Mail className="w-5 h-5" /></a>
-            </div>
-          </div>
-          <div className="space-y-8">
-            <h4 className="font-black text-xl text-white tracking-tight uppercase">Navigasi Portal</h4>
-            <ul className="space-y-4 text-slate-400 text-xs font-black uppercase tracking-[0.2em]">
-              <li><button onClick={() => navigateTo('home')} className="hover:text-emerald-400 transition-colors">Halaman Utama</button></li>
-              <li><button onClick={() => navigateTo('capaian')} className="hover:text-emerald-400 transition-colors">Analisis Capaian</button></li>
-              <li><button onClick={() => navigateTo('sppg')} className="hover:text-emerald-400 transition-colors">Direktori Unit SPPG</button></li>
-            </ul>
-          </div>
-          <div className="space-y-8">
-            <h4 className="font-black text-xl text-white tracking-tight uppercase">Kanal Informasi</h4>
-            <ul className="space-y-4 text-slate-400 text-sm font-medium">
-              <li><a href="https://bandungkab.go.id" target="_blank" className="hover:text-emerald-400 flex items-center"><Globe className="w-5 h-5 mr-3" /> bandungkab.go.id</a></li>
-              <li><a href="#" className="hover:text-emerald-400 flex items-center"><Globe className="w-5 h-5 mr-3" /> Dinas Pendidikan</a></li>
-              <li><a href="#" className="hover:text-emerald-400 flex items-center"><Globe className="w-5 h-5 mr-3" /> Dinas Kesehatan</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto pt-16 border-t border-white/5 text-center md:text-left flex flex-col md:flex-row justify-between gap-8 text-[10px] text-slate-500 font-black tracking-[0.3em] uppercase">
-          <p>© 2024 PEMERINTAH KABUPATEN BANDUNG. BEDAS - BANGKIT EDUKATIF DINAMIS AGAMIS SEJAHTERA.</p>
-          <div className="flex items-center justify-center space-x-6">
-            <span className="flex items-center"><MapPin className="w-4 h-4 mr-2" /> SOREANG, JAWA BARAT</span>
-          </div>
-        </div>
-      </footer>
 
       
 
