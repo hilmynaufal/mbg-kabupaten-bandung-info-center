@@ -1,0 +1,7 @@
+{
+  "name": "MBG Kabupaten Bandung Info Center",
+  "description": "Informative landing page for the Makan Bergizi Gratis program in Kabupaten Bandung, designed for Android WebView integration with AI-powered assistance.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
