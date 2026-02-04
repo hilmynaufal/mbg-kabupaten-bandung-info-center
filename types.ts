@@ -43,7 +43,7 @@ export interface KecamatanComparison {
   sppgCount: number;
 }
 
-export type ViewState = 'home' | 'capaian' | 'sppg' | 'sppg-detail';
+export type ViewState = 'home' | 'capaian' | 'sppg' | 'sppg-detail' | 'penerima-manfaat';
 
 // API Response Types
 export interface RealizationApiResponse {
@@ -75,13 +75,23 @@ export interface PotensiItem {
   Total: string;
   TK: string;
   KB: string;
+  TPA: string;
+  SPS: string;
+  PKBM: string;
   SD: string;
   SMP: string;
   SMA: string;
   SMK: string;
+  SLB: string;
+  PAUD: string;
   BALITA: string;
   BUMIL: string;
   BUSUI: string;
+  MA: string;
+  MTs: string;
+  MI: string;
+  RA: string;
+  PESANTREN: string;
   id: number;
 }
 

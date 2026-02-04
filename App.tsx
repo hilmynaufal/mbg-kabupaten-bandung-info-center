@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { 
-  HeartPulse, 
-  Utensils, 
-  GraduationCap, 
-  Users, 
-  ChevronDown, 
-  MessageCircle, 
-  X, 
+import {
+  HeartPulse,
+  Utensils,
+  GraduationCap,
+  Users,
+  ChevronDown,
+  MessageCircle,
+  X,
   Send,
   Leaf,
   Info,
@@ -47,8 +47,8 @@ import {
   BookOpen,
   BicepsFlexed
 } from 'lucide-react';
-import { 
-  ViewState, 
+import {
+  ViewState,
   KecamatanComparison,
   RealizationApiResponse,
   TargetApiResponse,
@@ -62,7 +62,7 @@ const App: React.FC = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Data States
   const [kecamatanComparison, setKecamatanComparison] = useState<KecamatanComparison[]>([]);
   const [sppgList, setSppgList] = useState<SppgUnit[]>([]);
@@ -70,7 +70,7 @@ const App: React.FC = () => {
   const [isAnalyticalDataLoading, setIsAnalyticalDataLoading] = useState(false);
   const [isHomeDataLoading, setIsHomeDataLoading] = useState(false);
   const [dataError, setDataError] = useState<string | null>(null);
-  
+
   // SPPG Filters
   const [sppgSearch, setSppgSearch] = useState('');
   const [selectedKecamatan, setSelectedKecamatan] = useState<string>('SEMUA');
@@ -103,7 +103,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') as ViewState;
-      if (['home', 'capaian', 'sppg'].includes(hash)) {
+      if (['home', 'capaian', 'sppg', 'penerima-manfaat'].includes(hash)) {
         setView(hash);
       } else if (hash.startsWith('sppg-detail')) {
         setView('sppg-detail');
@@ -119,7 +119,7 @@ const App: React.FC = () => {
 
   // Lazy-load analytical data only when navigating away from home
   useEffect(() => {
-    if ((view === 'capaian' || view === 'sppg' || view === 'sppg-detail') && analyticalStats.totalTarget === 0) {
+    if ((view === 'capaian' || view === 'sppg' || view === 'sppg-detail' || view === 'penerima-manfaat') && analyticalStats.totalTarget === 0) {
       fetchAnalyticalData();
     }
   }, [view]);
@@ -163,12 +163,12 @@ const App: React.FC = () => {
         br.sd_mi += (parseInt(p.SD) || 0) + (parseInt((p as any).MI) || 0);
         br.smp_mts += (parseInt(p.SMP) || 0) + (parseInt((p as any).MTs) || 0);
         br.sma_smk_ma += (parseInt(p.SMA) || 0) + (parseInt(p.SMK) || 0) + (parseInt((p as any).MA) || 0);
-        
+
         // Health grouping
         br.balita += parseInt(p.BALITA) || 0;
         br.bumil += parseInt(p.BUMIL) || 0;
         br.busui += parseInt(p.BUSUI) || 0;
-        
+
         // Community/Other grouping
         br.pesantren_lain += (parseInt((p as any).PESANTREN) || 0) + (parseInt((p as any).SLB) || 0) + (parseInt((p as any).PKBM) || 0);
       });
@@ -179,7 +179,7 @@ const App: React.FC = () => {
         breakdown: br
       });
       setPotensiData(potensiJson.data.info);
-      
+
       // Basic SPPG list for the directory
       const initialSppgList: SppgUnit[] = sppgUnitsJson.data.map((item: any) => ({
         nama: item.detail.nama,
@@ -214,7 +214,7 @@ const App: React.FC = () => {
       const realizationMap: Record<string, number> = {};
       const sppgByKecMap: Record<string, Set<string>> = {};
       const sppgStatsMap: Record<string, { laki: number, perempuan: number }> = {};
-      
+
       let lakiTotal = 0;
       let perempuanTotal = 0;
       let realTotal = 0;
@@ -224,7 +224,7 @@ const App: React.FC = () => {
         const laki = parseInt(String(item.detail.jumlah_lakilaki)) || 0;
         const perempuan = parseInt(String(item.detail.jumlah_perempuan)) || 0;
         const sppgName = item.detail.nama_sppg;
-        
+
         realizationMap[kec] = (realizationMap[kec] || 0) + laki + perempuan;
         lakiTotal += laki;
         perempuanTotal += perempuan;
@@ -284,8 +284,8 @@ const App: React.FC = () => {
 
   const filteredSppgList = useMemo(() => {
     return sppgList.filter(s => {
-      const matchSearch = s.nama.toLowerCase().includes(sppgSearch.toLowerCase()) || 
-                          s.kecamatan.toLowerCase().includes(sppgSearch.toLowerCase());
+      const matchSearch = s.nama.toLowerCase().includes(sppgSearch.toLowerCase()) ||
+        s.kecamatan.toLowerCase().includes(sppgSearch.toLowerCase());
       const matchKec = selectedKecamatan === 'SEMUA' || s.kecamatan === selectedKecamatan;
       return matchSearch && matchKec;
     });
@@ -323,7 +323,7 @@ const App: React.FC = () => {
             <span>Kabupaten Bandung Sehat & Bedas</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-black text-slate-900 leading-[1.05] mb-8 tracking-tight">
-            Makan Bergizi Gratis <br/>
+            Makan Bergizi Gratis <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">
               Generasi Emas 2045
             </span>
@@ -338,6 +338,9 @@ const App: React.FC = () => {
             </button>
             <button onClick={() => navigateTo('sppg')} className="bg-white text-slate-900 border-2 border-slate-100 px-10 py-5 rounded-2xl font-black hover:bg-slate-50 hover:border-slate-200 transition-all shadow-sm active:scale-95">
               Lokasi Unit Pelayanan
+            </button>
+            <button onClick={() => navigateTo('penerima-manfaat')} className="bg-white text-emerald-600 border-2 border-emerald-50 px-10 py-5 rounded-2xl font-black hover:bg-emerald-50 hover:border-emerald-100 transition-all shadow-sm active:scale-95">
+              Rincian Sasaran
             </button>
           </div>
         </div>
@@ -382,67 +385,67 @@ const App: React.FC = () => {
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 space-y-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-             <div className="space-y-4">
-               <p className="text-emerald-600 font-black tracking-[0.25em] text-xs uppercase">Potensi Sasaran Kabupaten Bandung</p>
-               <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Cakupan Luas di 31 Kecamatan</h2>
-             </div>
-             <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-6">
-                <div className="bg-emerald-50 p-4 rounded-2xl">
-                   <Target className="w-8 h-8 text-emerald-600" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Kapasitas Potensi</p>
-                  <p className="text-3xl font-black text-emerald-600">{homeStats.potensiTotal.toLocaleString('id-ID')}</p>
-                </div>
-             </div>
+            <div className="space-y-4">
+              <p className="text-emerald-600 font-black tracking-[0.25em] text-xs uppercase">Potensi Sasaran Kabupaten Bandung</p>
+              <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Cakupan Luas di 31 Kecamatan</h2>
+            </div>
+            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-6">
+              <div className="bg-emerald-50 p-4 rounded-2xl">
+                <Target className="w-8 h-8 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Kapasitas Potensi</p>
+                <p className="text-3xl font-black text-emerald-600">{homeStats.potensiTotal.toLocaleString('id-ID')}</p>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-             <BreakdownCard label="PAUD & TK" value={homeStats.breakdown.paud_tk} icon={<BookOpen className="w-6 h-6"/>} sub="Pendidikan Dini" />
-             <BreakdownCard label="Siswa SD/MI" value={homeStats.breakdown.sd_mi} icon={<School className="w-6 h-6"/>} sub="Pendidikan Dasar" />
-             <BreakdownCard label="Siswa SMP/MTs" value={homeStats.breakdown.smp_mts} icon={<School className="w-6 h-6"/>} sub="Menengah Pertama" />
-             <BreakdownCard label="SMA/SMK/MA" value={homeStats.breakdown.sma_smk_ma} icon={<School className="w-6 h-6"/>} sub="Menengah Atas" />
-             
-             <BreakdownCard label="Balita" value={homeStats.breakdown.balita} icon={<Baby className="w-6 h-6"/>} sub="Pencegahan Stunting" color="bg-orange-50" iconColor="bg-orange-600" />
-             <BreakdownCard label="Ibu Hamil" value={homeStats.breakdown.bumil} icon={<Stethoscope className="w-6 h-6"/>} sub="Dukungan Kehamilan" color="bg-rose-50" iconColor="bg-rose-600" />
-             <BreakdownCard label="Ibu Menyusui" value={homeStats.breakdown.busui} icon={<Milk className="w-6 h-6"/>} sub="Nutrisi Laktasi" color="bg-sky-50" iconColor="bg-sky-600" />
-             <BreakdownCard label="Pesantren & Lain" value={homeStats.breakdown.pesantren_lain} icon={<GraduationCap className="w-6 h-6"/>} sub="Santri & SLB" color="bg-teal-50" iconColor="bg-teal-600" />
+            <BreakdownCard label="PAUD & TK" value={homeStats.breakdown.paud_tk} icon={<BookOpen className="w-6 h-6" />} sub="Pendidikan Dini" />
+            <BreakdownCard label="Siswa SD/MI" value={homeStats.breakdown.sd_mi} icon={<School className="w-6 h-6" />} sub="Pendidikan Dasar" />
+            <BreakdownCard label="Siswa SMP/MTs" value={homeStats.breakdown.smp_mts} icon={<School className="w-6 h-6" />} sub="Menengah Pertama" />
+            <BreakdownCard label="SMA/SMK/MA" value={homeStats.breakdown.sma_smk_ma} icon={<School className="w-6 h-6" />} sub="Menengah Atas" />
+
+            <BreakdownCard label="Balita" value={homeStats.breakdown.balita} icon={<Baby className="w-6 h-6" />} sub="Pencegahan Stunting" color="bg-orange-50" iconColor="bg-orange-600" />
+            <BreakdownCard label="Ibu Hamil" value={homeStats.breakdown.bumil} icon={<Stethoscope className="w-6 h-6" />} sub="Dukungan Kehamilan" color="bg-rose-50" iconColor="bg-rose-600" />
+            <BreakdownCard label="Ibu Menyusui" value={homeStats.breakdown.busui} icon={<Milk className="w-6 h-6" />} sub="Nutrisi Laktasi" color="bg-sky-50" iconColor="bg-sky-600" />
+            <BreakdownCard label="Pesantren & Lain" value={homeStats.breakdown.pesantren_lain} icon={<GraduationCap className="w-6 h-6" />} sub="Santri & SLB" color="bg-teal-50" iconColor="bg-teal-600" />
           </div>
 
           <div className="bg-white p-10 md:p-16 rounded-[4rem] border border-slate-200 shadow-sm grid lg:grid-cols-2 gap-16 items-center">
-             <div className="space-y-8">
-               <h3 className="text-3xl font-black text-slate-900 leading-tight uppercase tracking-tighter">Infrastruktur Bedas Untuk Masa Depan</h3>
-               <p className="text-slate-500 font-medium text-lg leading-relaxed">
-                 Pemerintah Kabupaten Bandung terus memperluas jaringan SPPG untuk memastikan setiap sudut wilayah terjangkau layanan nutrisi berkualitas.
-               </p>
-               <div className="flex space-x-6">
-                  <div className="flex-1 p-8 bg-slate-50 rounded-3xl border border-slate-100 group hover:bg-emerald-600 transition-colors">
-                    <p className="text-4xl font-black text-slate-900 group-hover:text-white transition-colors">{homeStats.totalSppg}</p>
-                    <p className="text-[11px] font-black text-slate-400 group-hover:text-emerald-100 transition-colors uppercase tracking-[0.2em] mt-2">Unit SPPG Aktif</p>
-                  </div>
-                  <div className="flex-1 p-8 bg-slate-50 rounded-3xl border border-slate-100 group hover:bg-slate-900 transition-colors">
-                    <p className="text-4xl font-black text-slate-900 group-hover:text-white transition-colors">31</p>
-                    <p className="text-[11px] font-black text-slate-400 group-hover:text-slate-400 transition-colors uppercase tracking-[0.2em] mt-2">Kecamatan Terlayani</p>
-                  </div>
-               </div>
-             </div>
-             <div className="relative group">
-                <div className="absolute inset-0 bg-emerald-400 rounded-[3.5rem] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
-                <div className="relative bg-white border-2 border-slate-100 p-10 rounded-[3.5rem] shadow-xl space-y-8">
-                   <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 font-black">1</div>
-                      <h4 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Bahan Baku Lokal</h4>
-                   </div>
-                   <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 font-black">2</div>
-                      <h4 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Standar Gizi Terpantau</h4>
-                   </div>
-                   <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 font-black">3</div>
-                      <h4 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Distribusi Higienis</h4>
-                   </div>
+            <div className="space-y-8">
+              <h3 className="text-3xl font-black text-slate-900 leading-tight uppercase tracking-tighter">Infrastruktur Bedas Untuk Masa Depan</h3>
+              <p className="text-slate-500 font-medium text-lg leading-relaxed">
+                Pemerintah Kabupaten Bandung terus memperluas jaringan SPPG untuk memastikan setiap sudut wilayah terjangkau layanan nutrisi berkualitas.
+              </p>
+              <div className="flex space-x-6">
+                <div className="flex-1 p-8 bg-slate-50 rounded-3xl border border-slate-100 group hover:bg-emerald-600 transition-colors">
+                  <p className="text-4xl font-black text-slate-900 group-hover:text-white transition-colors">{homeStats.totalSppg}</p>
+                  <p className="text-[11px] font-black text-slate-400 group-hover:text-emerald-100 transition-colors uppercase tracking-[0.2em] mt-2">Unit SPPG Aktif</p>
                 </div>
-             </div>
+                <div className="flex-1 p-8 bg-slate-50 rounded-3xl border border-slate-100 group hover:bg-slate-900 transition-colors">
+                  <p className="text-4xl font-black text-slate-900 group-hover:text-white transition-colors">31</p>
+                  <p className="text-[11px] font-black text-slate-400 group-hover:text-slate-400 transition-colors uppercase tracking-[0.2em] mt-2">Kecamatan Terlayani</p>
+                </div>
+              </div>
+            </div>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-emerald-400 rounded-[3.5rem] blur-2xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
+              <div className="relative bg-white border-2 border-slate-100 p-10 rounded-[3.5rem] shadow-xl space-y-8">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 font-black">1</div>
+                  <h4 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Bahan Baku Lokal</h4>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 font-black">2</div>
+                  <h4 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Standar Gizi Terpantau</h4>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 font-black">3</div>
+                  <h4 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Distribusi Higienis</h4>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -451,12 +454,12 @@ const App: React.FC = () => {
 
   const BreakdownCard = ({ label, value, icon, sub, color = "bg-white", iconColor = "bg-emerald-600" }: any) => (
     <div className={`${color} p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all`}>
-       <div className={`${iconColor} w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-8 shadow-lg group-hover:scale-110 transition-transform`}>{icon}</div>
-       <div>
-         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
-         <h4 className="text-3xl font-black text-slate-900 tracking-tighter mb-1">{value.toLocaleString('id-ID')}</h4>
-         <p className="text-[10px] font-bold text-slate-400 uppercase italic opacity-60">{sub}</p>
-       </div>
+      <div className={`${iconColor} w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-8 shadow-lg group-hover:scale-110 transition-transform`}>{icon}</div>
+      <div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
+        <h4 className="text-3xl font-black text-slate-900 tracking-tighter mb-1">{value.toLocaleString('id-ID')}</h4>
+        <p className="text-[10px] font-bold text-slate-400 uppercase italic opacity-60">{sub}</p>
+      </div>
     </div>
   );
 
@@ -492,57 +495,57 @@ const App: React.FC = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatBox label="Target Sasaran" value={analyticalStats.totalTarget.toLocaleString('id-ID')} icon={<Target className="w-8 h-8"/>} color="bg-slate-900" textColor="text-white" sub="Jiwa Terverifikasi" />
-              <StatBox label="Realisasi Total" value={analyticalStats.totalRealization.toLocaleString('id-ID')} icon={<Users className="w-8 h-8"/>} color="bg-emerald-600" textColor="text-white" sub="Data Terinput" />
-              <StatBox label="Total Laki-Laki" value={analyticalStats.totalLaki.toLocaleString('id-ID')} icon={<UserCheck className="w-8 h-8"/>} color="bg-white" textColor="text-slate-900" sub="Siswa & Balita" />
-              <StatBox label="Total Perempuan" value={analyticalStats.totalPerempuan.toLocaleString('id-ID')} icon={<UserCheck className="w-8 h-8"/>} color="bg-white" textColor="text-slate-900" sub="Siswa, Ibu Hamil, Balita" />
+              <StatBox label="Target Sasaran" value={analyticalStats.totalTarget.toLocaleString('id-ID')} icon={<Target className="w-8 h-8" />} color="bg-slate-900" textColor="text-white" sub="Jiwa Terverifikasi" />
+              <StatBox label="Realisasi Total" value={analyticalStats.totalRealization.toLocaleString('id-ID')} icon={<Users className="w-8 h-8" />} color="bg-emerald-600" textColor="text-white" sub="Data Terinput" />
+              <StatBox label="Total Laki-Laki" value={analyticalStats.totalLaki.toLocaleString('id-ID')} icon={<UserCheck className="w-8 h-8" />} color="bg-white" textColor="text-slate-900" sub="Siswa & Balita" />
+              <StatBox label="Total Perempuan" value={analyticalStats.totalPerempuan.toLocaleString('id-ID')} icon={<UserCheck className="w-8 h-8" />} color="bg-white" textColor="text-slate-900" sub="Siswa, Ibu Hamil, Balita" />
             </div>
 
             <div className="bg-slate-50 p-8 md:p-16 rounded-[4rem] border border-slate-200 shadow-inner">
-               <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16">
-                 <div className="space-y-4">
-                   <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Visualisasi Capaian Wilayah</h3>
-                   <p className="text-slate-500 font-medium">Bagan perbandingan realisasi harian di 31 Kecamatan.</p>
-                 </div>
-                 <div className="flex items-center space-x-6 bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-slate-200 rounded-full"></div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Target</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Realisasi</span>
-                    </div>
-                 </div>
-               </div>
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16">
+                <div className="space-y-4">
+                  <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Visualisasi Capaian Wilayah</h3>
+                  <p className="text-slate-500 font-medium">Bagan perbandingan realisasi harian di 31 Kecamatan.</p>
+                </div>
+                <div className="flex items-center space-x-6 bg-white p-3 rounded-2xl shadow-sm border border-slate-100">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-slate-200 rounded-full"></div>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Target</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Realisasi</span>
+                  </div>
+                </div>
+              </div>
 
-               <div className="space-y-12 max-h-[1000px] overflow-y-auto pr-6 custom-scrollbar">
-                  {kecamatanComparison.sort((a,b) => b.target - a.target).map((k, i) => {
-                    const maxTarget = Math.max(...kecamatanComparison.map(x => x.target));
-                    return (
-                      <div key={i} className="group space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <span className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center font-black text-slate-400 text-xs">{i+1}</span>
-                            <span className="font-black text-slate-800 uppercase tracking-tight text-lg group-hover:text-emerald-600 transition-colors">{k.name}</span>
-                          </div>
-                          <div className="text-right">
-                             <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Efisiensi</p>
-                             <p className={`text-xl font-black ${k.percentage > 0 ? 'text-emerald-500' : 'text-slate-300'}`}>{k.percentage.toFixed(2)}%</p>
-                          </div>
+              <div className="space-y-12 max-h-[1000px] overflow-y-auto pr-6 custom-scrollbar">
+                {kecamatanComparison.sort((a, b) => b.target - a.target).map((k, i) => {
+                  const maxTarget = Math.max(...kecamatanComparison.map(x => x.target));
+                  return (
+                    <div key={i} className="group space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <span className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center font-black text-slate-400 text-xs">{i + 1}</span>
+                          <span className="font-black text-slate-800 uppercase tracking-tight text-lg group-hover:text-emerald-600 transition-colors">{k.name}</span>
                         </div>
-                        <div className="relative h-6 w-full bg-white rounded-2xl overflow-hidden shadow-inner border border-slate-200 p-1">
-                          <div className="absolute inset-y-1 left-1 bg-slate-100 rounded-xl transition-all duration-1000" style={{ width: `calc(${ (k.target / maxTarget) * 100 }% - 8px)` }}></div>
-                          <div className="absolute inset-y-1 left-1 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-xl shadow-lg shadow-emerald-200 transition-all duration-1000 delay-300" style={{ width: `calc(${ (k.realization / maxTarget) * 100 }% - 8px)` }}></div>
-                        </div>
-                        <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">
-                          <span>Target: {k.target.toLocaleString()}</span>
-                          <span>Realisasi: {k.realization.toLocaleString()}</span>
+                        <div className="text-right">
+                          <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Efisiensi</p>
+                          <p className={`text-xl font-black ${k.percentage > 0 ? 'text-emerald-500' : 'text-slate-300'}`}>{k.percentage.toFixed(2)}%</p>
                         </div>
                       </div>
-                    );
-                  })}
-               </div>
+                      <div className="relative h-6 w-full bg-white rounded-2xl overflow-hidden shadow-inner border border-slate-200 p-1">
+                        <div className="absolute inset-y-1 left-1 bg-slate-100 rounded-xl transition-all duration-1000" style={{ width: `calc(${(k.target / maxTarget) * 100}% - 8px)` }}></div>
+                        <div className="absolute inset-y-1 left-1 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-xl shadow-lg shadow-emerald-200 transition-all duration-1000 delay-300" style={{ width: `calc(${(k.realization / maxTarget) * 100}% - 8px)` }}></div>
+                      </div>
+                      <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">
+                        <span>Target: {k.target.toLocaleString()}</span>
+                        <span>Realisasi: {k.realization.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </>
         )}
@@ -576,8 +579,8 @@ const App: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
             <div className="relative flex-1 sm:w-80">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Cari Nama Unit..."
                 value={sppgSearch}
                 onChange={(e) => setSppgSearch(e.target.value)}
@@ -586,7 +589,7 @@ const App: React.FC = () => {
             </div>
             <div className="relative w-full sm:w-64">
               <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <select 
+              <select
                 value={selectedKecamatan}
                 onChange={(e) => setSelectedKecamatan(e.target.value)}
                 className="w-full bg-white border-2 border-slate-100 rounded-2xl py-4 pl-12 pr-10 focus:outline-none focus:border-emerald-500 transition-all font-bold text-slate-700 shadow-sm appearance-none cursor-pointer"
@@ -609,7 +612,7 @@ const App: React.FC = () => {
                   <div className="w-14 h-14 bg-emerald-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-lg group-hover:bg-slate-900 transition-colors">
                     <Building2 className="w-7 h-7" />
                   </div>
-                  <button 
+                  <button
                     onClick={() => { setSelectedSppg(sppg); navigateTo('sppg-detail'); }}
                     className="p-3 bg-slate-50 hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 rounded-xl transition-colors"
                   >
@@ -625,17 +628,17 @@ const App: React.FC = () => {
                 </div>
               </div>
               <div className="relative z-10 mt-10 pt-8 border-t border-slate-50 flex items-center justify-between">
-                 <div className="space-y-1">
-                   <p className="text-[10px] font-black text-slate-300 uppercase">Wilayah Desa</p>
-                   <p className="text-sm font-black text-slate-500 uppercase">{sppg.desa}</p>
-                 </div>
-                 <button 
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-slate-300 uppercase">Wilayah Desa</p>
+                  <p className="text-sm font-black text-slate-500 uppercase">{sppg.desa}</p>
+                </div>
+                <button
                   onClick={() => { setSelectedSppg(sppg); navigateTo('sppg-detail'); }}
                   className="flex items-center text-emerald-600 font-black text-xs group/link"
-                 >
-                   DETAIL UNIT
-                   <ChevronRight className="ml-1 w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-                 </button>
+                >
+                  DETAIL UNIT
+                  <ChevronRight className="ml-1 w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                </button>
               </div>
             </div>
           )) : (
@@ -643,7 +646,7 @@ const App: React.FC = () => {
               <Search className="w-24 h-24 text-slate-100 mx-auto mb-8" />
               <h3 className="text-2xl font-black text-slate-300 uppercase tracking-tighter">Unit Tidak Ditemukan</h3>
               <p className="text-slate-400 mt-2 font-medium">Coba filter kecamatan lain atau kata kunci pencarian yang berbeda.</p>
-              <button onClick={() => {setSppgSearch(''); setSelectedKecamatan('SEMUA')}} className="mt-10 text-emerald-600 font-black text-sm uppercase underline">Reset Filter</button>
+              <button onClick={() => { setSppgSearch(''); setSelectedKecamatan('SEMUA') }} className="mt-10 text-emerald-600 font-black text-sm uppercase underline">Reset Filter</button>
             </div>
           )}
         </div>
@@ -658,8 +661,8 @@ const App: React.FC = () => {
     }
 
     const kecComparison = kecamatanComparison.find(k => k.name.toUpperCase() === selectedSppg.kecamatan.toUpperCase());
-    const contributionPercentage = analyticalStats.totalRealization > 0 
-      ? (selectedSppg.totalRealization / analyticalStats.totalRealization) * 100 
+    const contributionPercentage = analyticalStats.totalRealization > 0
+      ? (selectedSppg.totalRealization / analyticalStats.totalRealization) * 100
       : 0;
 
     return (
@@ -678,15 +681,15 @@ const App: React.FC = () => {
           <div className="bg-white p-12 rounded-[4rem] border border-slate-200 shadow-xl shadow-slate-200/50 flex flex-col md:flex-row gap-12 items-center md:items-start relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-50"></div>
             <div className="relative z-10">
-               <div className="bg-emerald-600 w-24 h-24 md:w-32 md:h-32 rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl shadow-emerald-200">
-                  <Building2 className="w-12 h-12 md:w-16 md:h-16" />
-               </div>
+              <div className="bg-emerald-600 w-24 h-24 md:w-32 md:h-32 rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl shadow-emerald-200">
+                <Building2 className="w-12 h-12 md:w-16 md:h-16" />
+              </div>
             </div>
             <div className="flex-1 space-y-6 text-center md:text-left relative z-10">
               <div className="space-y-3">
                 <div className="flex items-center justify-center md:justify-start space-x-3 text-emerald-600 font-black text-[10px] uppercase tracking-[0.25em]">
-                   <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                   <span>SATUAN PELAYANAN AKTIF</span>
+                  <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                  <span>SATUAN PELAYANAN AKTIF</span>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase leading-none">{selectedSppg.nama}</h1>
               </div>
@@ -699,104 +702,215 @@ const App: React.FC = () => {
 
           {/* Analytical data for specific SPPG */}
           {isAnalyticalDataLoading ? (
-             <div className="p-20 text-center bg-white rounded-[3rem] border border-slate-200">
-                <Loader2 className="w-12 h-12 text-emerald-600 animate-spin mx-auto mb-4" />
-                <p className="font-black text-xs uppercase tracking-widest text-slate-400">Sinkronisasi Laporan Harian Unit...</p>
-             </div>
+            <div className="p-20 text-center bg-white rounded-[3rem] border border-slate-200">
+              <Loader2 className="w-12 h-12 text-emerald-600 animate-spin mx-auto mb-4" />
+              <p className="font-black text-xs uppercase tracking-widest text-slate-400">Sinkronisasi Laporan Harian Unit...</p>
+            </div>
           ) : (
             <div className="space-y-8">
               <div className="flex items-center space-x-3">
-                 <Activity className="w-6 h-6 text-emerald-600" />
-                 <h3 className="text-2xl font-black text-slate-900 tracking-tight">Performa & Statistik Unit</h3>
+                <Activity className="w-6 h-6 text-emerald-600" />
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Performa & Statistik Unit</h3>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                 <StatBox 
-                  label="Realisasi Harian" 
-                  value={selectedSppg.totalRealization.toLocaleString('id-ID')} 
-                  icon={<Users className="w-8 h-8"/>} 
-                  color="bg-emerald-600" 
-                  textColor="text-white" 
-                  sub="Jiwa Terlayani" 
-                 />
-                 <StatBox 
-                  label="Laki-Laki" 
-                  value={selectedSppg.totalLaki.toLocaleString('id-ID')} 
-                  icon={<UserCheck className="w-8 h-8"/>} 
-                  color="bg-white" 
-                  textColor="text-slate-900" 
-                  sub="Siswa & Balita" 
-                 />
-                 <StatBox 
-                  label="Perempuan" 
-                  value={selectedSppg.totalPerempuan.toLocaleString('id-ID')} 
-                  icon={<UserCheck className="w-8 h-8"/>} 
-                  color="bg-white" 
-                  textColor="text-slate-900" 
-                  sub="Siswa & Ibu Hamil" 
-                 />
+                <StatBox
+                  label="Realisasi Harian"
+                  value={selectedSppg.totalRealization.toLocaleString('id-ID')}
+                  icon={<Users className="w-8 h-8" />}
+                  color="bg-emerald-600"
+                  textColor="text-white"
+                  sub="Jiwa Terlayani"
+                />
+                <StatBox
+                  label="Laki-Laki"
+                  value={selectedSppg.totalLaki.toLocaleString('id-ID')}
+                  icon={<UserCheck className="w-8 h-8" />}
+                  color="bg-white"
+                  textColor="text-slate-900"
+                  sub="Siswa & Balita"
+                />
+                <StatBox
+                  label="Perempuan"
+                  value={selectedSppg.totalPerempuan.toLocaleString('id-ID')}
+                  icon={<UserCheck className="w-8 h-8" />}
+                  color="bg-white"
+                  textColor="text-slate-900"
+                  sub="Siswa & Ibu Hamil"
+                />
               </div>
 
               <div className="bg-white p-10 rounded-[3.5rem] border border-slate-200 shadow-sm grid md:grid-cols-2 gap-12">
-                 <div className="space-y-6">
-                   <h4 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Kontribusi Wilayah</h4>
-                   <div className="space-y-4">
-                     <div className="space-y-2">
-                       <div className="flex justify-between text-xs font-black text-slate-400 uppercase tracking-widest">
-                          <span>Kontribusi ke Kabupaten</span>
-                          <span className="text-emerald-600">{contributionPercentage.toFixed(2)}%</span>
-                       </div>
-                       <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${contributionPercentage}%` }}></div>
-                       </div>
-                     </div>
-                     {kecComparison && (
-                       <div className="space-y-2">
-                         <div className="flex justify-between text-xs font-black text-slate-400 uppercase tracking-widest">
-                            <span>Efisiensi Wilayah {selectedSppg.kecamatan}</span>
-                            <span className="text-blue-600">{kecComparison.percentage.toFixed(2)}%</span>
-                         </div>
-                         <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${kecComparison.percentage}%` }}></div>
-                         </div>
-                       </div>
-                     )}
-                   </div>
-                 </div>
-                 <div className="flex flex-col justify-center p-8 bg-slate-50 rounded-3xl border border-slate-100">
-                    <p className="text-sm font-medium text-slate-500 italic leading-relaxed">
-                      "Unit {selectedSppg.nama} secara aktif mendukung program percepatan perbaikan gizi di wilayah desa {selectedSppg.desa}."
-                    </p>
-                 </div>
+                <div className="space-y-6">
+                  <h4 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Kontribusi Wilayah</h4>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs font-black text-slate-400 uppercase tracking-widest">
+                        <span>Kontribusi ke Kabupaten</span>
+                        <span className="text-emerald-600">{contributionPercentage.toFixed(2)}%</span>
+                      </div>
+                      <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${contributionPercentage}%` }}></div>
+                      </div>
+                    </div>
+                    {kecComparison && (
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-xs font-black text-slate-400 uppercase tracking-widest">
+                          <span>Efisiensi Wilayah {selectedSppg.kecamatan}</span>
+                          <span className="text-blue-600">{kecComparison.percentage.toFixed(2)}%</span>
+                        </div>
+                        <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-blue-500 rounded-full" style={{ width: `${kecComparison.percentage}%` }}></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col justify-center p-8 bg-slate-50 rounded-3xl border border-slate-100">
+                  <p className="text-sm font-medium text-slate-500 italic leading-relaxed">
+                    "Unit {selectedSppg.nama} secara aktif mendukung program percepatan perbaikan gizi di wilayah desa {selectedSppg.desa}."
+                  </p>
+                </div>
               </div>
             </div>
           )}
 
           {/* Location Section */}
           <div className="bg-slate-900 rounded-[4rem] p-10 md:p-16 text-white space-y-12 relative overflow-hidden shadow-2xl">
-             <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500 rounded-full blur-[120px] -mr-40 -mt-40 opacity-20"></div>
-             <div className="relative z-10 space-y-8">
-               <div className="space-y-4">
-                 <h3 className="text-3xl font-black tracking-tight">Akses Navigasi Unit</h3>
-                 <p className="text-slate-400 font-medium">Gunakan koordinat atau alamat di bawah ini untuk menuju lokasi Satuan Pelayanan Pangan Bergizi.</p>
-               </div>
-               {selectedSppg.lokasi ? (
-                 <a 
-                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedSppg.lokasi.replace('Lat: Lon:', ''))}`} 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   className="flex items-center justify-center space-x-4 w-full py-8 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[2.5rem] font-black transition-all shadow-xl active:scale-95 group"
-                 >
-                   <MapIcon className="w-8 h-8" />
-                   <span className="text-xl uppercase tracking-tighter">Navigasi Ke Lokasi</span>
-                   <ExternalLink className="w-6 h-6 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
-                 </a>
-               ) : (
-                 <div className="bg-white/5 border-2 border-dashed border-white/10 p-12 rounded-[2.5rem] text-center">
-                   <p className="text-slate-500 font-black uppercase tracking-widest italic">Lokasi Spesifik Sedang Dalam Proses Verifikasi</p>
-                 </div>
-               )}
-             </div>
+            <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500 rounded-full blur-[120px] -mr-40 -mt-40 opacity-20"></div>
+            <div className="relative z-10 space-y-8">
+              <div className="space-y-4">
+                <h3 className="text-3xl font-black tracking-tight">Akses Navigasi Unit</h3>
+                <p className="text-slate-400 font-medium">Gunakan koordinat atau alamat di bawah ini untuk menuju lokasi Satuan Pelayanan Pangan Bergizi.</p>
+              </div>
+              {selectedSppg.lokasi ? (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedSppg.lokasi.replace('Lat: Lon:', ''))}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center space-x-4 w-full py-8 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[2.5rem] font-black transition-all shadow-xl active:scale-95 group"
+                >
+                  <MapIcon className="w-8 h-8" />
+                  <span className="text-xl uppercase tracking-tighter">Navigasi Ke Lokasi</span>
+                  <ExternalLink className="w-6 h-6 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
+                </a>
+              ) : (
+                <div className="bg-white/5 border-2 border-dashed border-white/10 p-12 rounded-[2.5rem] text-center">
+                  <p className="text-slate-500 font-black uppercase tracking-widest italic">Lokasi Spesifik Sedang Dalam Proses Verifikasi</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const PenerimaManfaatView = () => {
+    const categories = [
+      { key: 'TK', label: 'Taman Kanak-Kanak', icon: <School className="w-5 h-5" />, color: 'bg-blue-500' },
+      { key: 'KB', label: 'Kelompok Bermain', icon: <Baby className="w-5 h-5" />, color: 'bg-orange-500' },
+      { key: 'TPA', label: 'TPA', icon: <Baby className="w-5 h-5" />, color: 'bg-emerald-500' },
+      { key: 'SPS', label: 'SPS', icon: <Baby className="w-5 h-5" />, color: 'bg-teal-500' },
+      { key: 'PKBM', label: 'PKBM', icon: <BookOpen className="w-5 h-5" />, color: 'bg-rose-500' },
+      { key: 'SD', label: 'Sekolah Dasar', icon: <Building2 className="w-5 h-5" />, color: 'bg-red-500' },
+      { key: 'SMP', label: 'SMP', icon: <Building2 className="w-5 h-5" />, color: 'bg-indigo-500' },
+      { key: 'SMA', label: 'SMA', icon: <Building2 className="w-5 h-5" />, color: 'bg-purple-500' },
+      { key: 'SMK', label: 'SMK', icon: <Building2 className="w-5 h-5" />, color: 'bg-violet-500' },
+      { key: 'SLB', label: 'Sekolah Luar Biasa', icon: <HeartPulse className="w-5 h-5" />, color: 'bg-pink-500' },
+      { key: 'PAUD', label: 'PAUD', icon: <School className="w-5 h-5" />, color: 'bg-cyan-500' },
+      { key: 'BALITA', label: 'Balita', icon: <Baby className="w-5 h-5" />, color: 'bg-yellow-500' },
+      { key: 'BUMIL', label: 'Ibu Hamil', icon: <Stethoscope className="w-5 h-5" />, color: 'bg-rose-400' },
+      { key: 'BUSUI', label: 'Ibu Menyusui', icon: <Milk className="w-5 h-5" />, color: 'bg-sky-400' },
+      { key: 'MA', label: 'Madrasah Aliyah', icon: <GraduationCap className="w-5 h-5" />, color: 'bg-green-600' },
+      { key: 'MTs', label: 'MTs', icon: <GraduationCap className="w-5 h-5" />, color: 'bg-emerald-600' },
+      { key: 'MI', label: 'MI', icon: <GraduationCap className="w-5 h-5" />, color: 'bg-lime-600' },
+      { key: 'RA', label: 'Raudhatul Athfal', icon: <School className="w-5 h-5" />, color: 'bg-green-500' },
+      { key: 'PESANTREN', label: 'Pesantren', icon: <Building2 className="w-5 h-5" />, color: 'bg-amber-600' },
+    ];
+
+    const totals = useMemo(() => {
+      const t: Record<string, number> = {};
+      categories.forEach(c => t[c.key] = 0);
+      potensiData.forEach(item => {
+        categories.forEach(c => {
+          t[c.key] += parseInt((item as any)[c.key]) || 0;
+        });
+      });
+      return t;
+    }, [potensiData]);
+
+    const totalAll = Object.values(totals).reduce((acc: number, curr: number) => acc + curr, 0);
+
+    return (
+      <div className="bg-slate-50 min-h-screen pb-20 animate-fade-in">
+        <div className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-20 z-30 px-4 py-4 shadow-sm">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <button onClick={() => navigateTo('home')} className="flex items-center text-slate-600 font-black hover:text-emerald-600 transition-all group">
+              <ArrowLeft className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform" />
+              KEMBALI KE BERANDA
+            </button>
+            <div className="hidden md:flex items-center space-x-4">
+              <span className="bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+                Data Agregat Penerima Manfaat
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 pt-16 space-y-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="space-y-4 max-w-3xl">
+              <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Rincian Penerima Manfaat</h1>
+              <p className="text-slate-500 text-lg font-medium leading-relaxed italic border-l-4 border-emerald-500 pl-6 py-2">
+                "Data akumulasi seluruh sasaran penerima manfaat Makan Bergizi Gratis (MBG) dari 31 Kecamatan di Kabupaten Bandung."
+              </p>
+            </div>
+            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex items-center space-x-6">
+              <div className="bg-emerald-50 p-4 rounded-2xl">
+                <Users className="w-8 h-8 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Keseluruhan</p>
+                <p className="text-3xl font-black text-emerald-600">{totalAll.toLocaleString('id-ID')}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {categories.map((cat, idx) => (
+              <div key={idx} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group overflow-hidden relative">
+                <div className={`absolute top-0 right-0 w-24 h-24 ${cat.color} opacity-5 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform`}></div>
+                <div className={`${cat.color} w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
+                  {cat.icon}
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{cat.label}</p>
+                  <h4 className="text-3xl font-black text-slate-900 tracking-tighter">{(totals[cat.key] || 0).toLocaleString('id-ID')}</h4>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-emerald-600 rounded-[4rem] p-12 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-[100px] -mr-48 -mt-48 opacity-10"></div>
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="space-y-4">
+                <h3 className="text-3xl font-black tracking-tighter uppercase">Komitmen Pemerintah</h3>
+                <p className="text-emerald-100 font-medium max-w-xl text-lg">
+                  Melalui data yang transparan dan akurat, Pemerintah Kabupaten Bandung berkomitmen untuk terus meningkatkan layanan nutrisi bagi seluruh lapisan masyarakat.
+                </p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20">
+                <div className="flex items-center space-x-4">
+                  <Activity className="w-10 h-10 text-white" />
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Status Data</p>
+                    <p className="text-xl font-black">Terverifikasi & Live</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -817,7 +931,7 @@ const App: React.FC = () => {
   return (
     <div className="relative min-h-screen">
       {isInitialLoading && <LoadingScreen />}
-      
+
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center space-x-4 cursor-pointer" onClick={() => navigateTo('home')}>
@@ -854,9 +968,10 @@ const App: React.FC = () => {
         {view === 'capaian' && <CapaianView />}
         {view === 'sppg' && <SppgView />}
         {view === 'sppg-detail' && <SppgDetailView />}
+        {view === 'penerima-manfaat' && <PenerimaManfaatView />}
       </main>
 
-      
+
 
       <style>{`
         @keyframes fade-in {
